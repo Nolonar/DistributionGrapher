@@ -1,5 +1,6 @@
 body {
     background-color: black;
+    color: white;
 }
 
 #main-content {
@@ -25,10 +26,15 @@ body {
     color: white;
 }
 
+#controls {
+    display: flex;
+    margin: 2em 0 1em;
+    align-items: baseline;
+    justify-content: space-between;
+}
+
 #btn-submit {
     cursor: pointer;
-    align-self: flex-end;
-    margin: 2em 0 1em;
     padding: 1ex;
     color: white;
     background-color: #222222;

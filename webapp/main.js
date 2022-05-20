@@ -1,4 +1,3 @@
-const SAMPLE_SIZE = 100000;
 const NOTCH_COUNT = 8;
 const NOTCH_LENGTH = 10;
 const LABEL_MARGIN = 5;
@@ -8,6 +7,7 @@ const canvas = document.getElementById("graph");
 canvas.width = canvas.clientWidth;
 canvas.height = canvas.clientHeight;
 
+const sampleSizeInput = document.getElementById("sample-size");
 const codeArea = document.getElementById("code-area");
 
 const ctx = canvas.getContext("2d");
@@ -17,8 +17,9 @@ ctx.textAlign = "center";
 ctx.fillStyle = "white";
 ctx.strokeStyle = "white";
 
+const getSampleSize = () => Number(sampleSizeInput.value);
 const getFunction = () => codeArea.value;
-const getNumbers = (f) => [...Array(SAMPLE_SIZE)].map(() => Number(eval(f)));
+const getNumbers = (f) => [...Array(getSampleSize())].map(() => Number(eval(f)));
 const getXAxisPos = () => canvas.height - NOTCH_LENGTH - LABEL_MARGIN - TEXT_SIZE;
 const getYAxisPos = () => NOTCH_LENGTH / 2;
 const getNotchPositions = () => [...Array(NOTCH_COUNT)].map((_, i) => getYAxisPos() + (i + 1) * (canvas.width - getYAxisPos()) / NOTCH_COUNT);
