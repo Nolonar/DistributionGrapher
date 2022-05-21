@@ -99,21 +99,23 @@ function drawGraphLabels(numbers) {
     ctx.textBaseline = "top";
 
     const y = getXAxisPos() + NOTCH_LENGTH + LABEL_MARGIN;
+    const minValue = getMinValue();
+    const maxValue = getMaxValue();
+    const spacing = (maxValue - minValue) / NOTCH_COUNT;
 
     ctx.textAlign = "left";
-    ctx.fillText(getMinValue(), 0, y);
+    ctx.fillText(minValue, 0, y);
 
     ctx.textAlign = "center";
     const notches = getNotchPositions();
-    const nSpacing = numbers.length / NOTCH_COUNT;
     for (let i = 0; i < NOTCH_COUNT - 1; i++) {
         const x = notches[i];
-        const n = numbers[Math.round(nSpacing * (i + 1))];
+        const n = minValue + Math.floor(spacing * (i + 1));
         ctx.fillText(n, x, y);
     }
 
     ctx.textAlign = "right";
-    ctx.fillText(getMaxValue(), canvas.width, y);
+    ctx.fillText(maxValue, canvas.width, y);
 
     ctx.textBaseline = textBaseline;
     ctx.textAlign = textAlign;
