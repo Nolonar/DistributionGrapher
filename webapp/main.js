@@ -11,6 +11,9 @@ const sampleSizeInput = document.getElementById("sample-size");
 const minValueInput = document.getElementById("min-value");
 const maxValueInput = document.getElementById("max-value");
 const codeArea = document.getElementById("code-area");
+const medText = document.getElementById("med");
+const varText = document.getElementById("var");
+const stdText = document.getElementById("std");
 
 const ctx = canvas.getContext("2d");
 ctx.translate(-0.5, 0.5); // fix for blurry lines
@@ -31,7 +34,8 @@ const getMaxValue = () => Number(maxValueInput.value);
 const getNumbers = (f) => [...Array(getSampleSize())].map(() => Number(eval(f)));
 const getXAxisPos = () => canvas.height - NOTCH_LENGTH - LABEL_MARGIN - TEXT_SIZE;
 const getYAxisPos = () => NOTCH_LENGTH / 2;
-const getNotchPositions = () => [...Array(NOTCH_COUNT)].map((_, i) => getYAxisPos() + (i + 1) * (canvas.width - getYAxisPos()) / NOTCH_COUNT);
+const getGraphWidth = () => canvas.width - getYAxisPos();
+const getNotchPositions = () => [...Array(NOTCH_COUNT)].map((_, i) => getYAxisPos() + (i + 1) * (getGraphWidth()) / NOTCH_COUNT);
 const getDistribution = numbers => {
     const result = {};
     for (let n of numbers) {
@@ -42,7 +46,19 @@ const getDistribution = numbers => {
         }
     }
     return result;
-}
+};
+const getStats = numbers => {
+    const midpoint = Math.floor(numbers.length / 2);
+    const median = numbers.length % 2 ? numbers[midpoint] : (numbers[midpoint - 1] + numbers[midpoint]) / 2;
+    const variance = numbers.map(n => (n - median) * (n - median)).reduce((a, b) => a + b) / numbers.length;
+    const std = Math.sqrt(variance);
+
+    return {
+        median: median,
+        variance: variance,
+        std: std
+    };
+};
 
 const changePredefinedFunction = select => {
     codeArea.value = predefinedFunctions[select.value];
@@ -75,6 +91,7 @@ function drawGraph() {
     const maxValue = getMaxValue();
     const minValue = getMinValue();
     numbers = numbers.map(n => Math.floor((maxValue - minValue) * n + minValue));
+    const stats = getStats(numbers);
 
     ctx.beginPath();
     drawGraphAxes();
@@ -82,7 +99,9 @@ function drawGraph() {
     drawGraphLabels();
     ctx.stroke();
 
-    drawGraphPlot(numbers);
+    drawGraphPlot(numbers, stats);
+
+    updateStats(stats);
 }
 
 function drawGraphAxes() {
@@ -95,7 +114,7 @@ function drawGraphAxes() {
     ctx.lineTo(canvas.width, xAxisPos);
 }
 
-function drawGraphNotches() {
+function drawGraphNotches(stats) {
     const xAxisPos = getXAxisPos();
     for (let x of getNotchPositions()) {
         ctx.moveTo(x, xAxisPos);
@@ -131,30 +150,52 @@ function drawGraphLabels() {
     ctx.textAlign = textAlign;
 }
 
-function drawGraphPlot(numbers) {
-    const strokeStyle = ctx.strokeStyle;
-    ctx.strokeStyle = "yellow";
-
+function drawGraphPlot(numbers, stats) {
     const smallest = getMinValue();
     const largest = getMaxValue();
     const delta = largest - smallest;
-    const spacing = (canvas.width - getYAxisPos()) / delta;
+    const spacing = getGraphWidth() / delta;
     const distribution = getDistribution(numbers);
     const highestCount = Math.max(...Object.values(distribution));
     const yScale = getXAxisPos() / highestCount;
 
+    const strokeStyle = ctx.strokeStyle;
+    // MEDIAN
+    ctx.beginPath();
+    let x = getYAxisPos() + stats.median * spacing;
+    let y = getXAxisPos();
+    ctx.moveTo(x, 0)
+    ctx.lineTo(x, y);
+    ctx.strokeStyle = "red";
+    ctx.stroke();
+
+    // STD
+    ctx.beginPath();
+    for (let i of [-3, -2, -1, 1, 2, 3]) {
+        const offset = stats.std * i;
+        x = getYAxisPos() + (stats.median + offset) * spacing;
+        if (x > getYAxisPos() && x <= canvas.width) {
+            ctx.moveTo(x, 0);
+            ctx.lineTo(x, y);
+        }
+    }
+    ctx.strokeStyle = "cyan";
+    ctx.stroke();
+
+    // GRAPH
     ctx.beginPath();
     for (let i = 0; i <= delta; i++) {
         const n = smallest + i;
 
-        const x = getYAxisPos() + i * spacing;
-        const y = getXAxisPos() - yScale * (distribution[n] || 0);
+        x = getYAxisPos() + i * spacing;
+        y = getXAxisPos() - yScale * (distribution[n] || 0);
         if (i === 0) {
             ctx.moveTo(x, y);
         } else {
             ctx.lineTo(x, y);
         }
     }
+    ctx.strokeStyle = "yellow";
     ctx.stroke();
     ctx.strokeStyle = strokeStyle;
 }
@@ -166,6 +207,12 @@ function drawErrorMessage(errorMessage) {
     ctx.fillText(errorMessage, canvas.width / 2, canvas.height / 2);
 
     ctx.fillStyle = fillStyle;
+}
+
+function updateStats(stats) {
+    medText.innerText = stats.median;
+    varText.innerText = stats.variance;
+    stdText.innerText = stats.std;
 }
 
 document.getElementById("btn-submit").addEventListener("click", drawGraph);
