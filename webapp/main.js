@@ -8,10 +8,12 @@ canvas.width = canvas.clientWidth;
 canvas.height = canvas.clientHeight;
 
 const sampleSizeInput = document.getElementById("sample-size");
+const minValueInput = document.getElementById("min-value");
+const maxValueInput = document.getElementById("max-value");
 const codeArea = document.getElementById("code-area");
 
 const ctx = canvas.getContext("2d");
-ctx.translate(-0.5, -0.5); // fix for blurry lines
+ctx.translate(-0.5, 0.5); // fix for blurry lines
 ctx.font = `${TEXT_SIZE}px Arial`;
 ctx.textAlign = "center";
 ctx.fillStyle = "white";
@@ -19,6 +21,8 @@ ctx.strokeStyle = "white";
 
 const getSampleSize = () => Number(sampleSizeInput.value);
 const getFunction = () => codeArea.value;
+const getMinValue = () => Number(minValueInput.value);
+const getMaxValue = () => Number(maxValueInput.value);
 const getNumbers = (f) => [...Array(getSampleSize())].map(() => Number(eval(f)));
 const getXAxisPos = () => canvas.height - NOTCH_LENGTH - LABEL_MARGIN - TEXT_SIZE;
 const getYAxisPos = () => NOTCH_LENGTH / 2;
@@ -36,7 +40,7 @@ const getDistribution = numbers => {
 }
 
 function drawGraph() {
-    ctx.clearRect(0, 0, canvas.width + 1, canvas.height + 1);
+    ctx.clearRect(0, -1, canvas.width + 1, canvas.height);
 
     let numbers;
     try {
@@ -52,6 +56,15 @@ function drawGraph() {
     }
 
     numbers.sort((a, b) => a - b);
+
+    if (numbers[0] < 0 || numbers.slice(-1)[0] > 1) {
+        drawErrorMessage("Function must return numbers between 0 and 1");
+        return;
+    }
+
+    const maxValue = getMaxValue();
+    const minValue = getMinValue();
+    numbers = numbers.map(n => Math.floor((maxValue - minValue) * n + minValue));
 
     ctx.beginPath();
     drawGraphAxes();
@@ -85,12 +98,10 @@ function drawGraphLabels(numbers) {
     const textBaseline = ctx.textBaseline;
     ctx.textBaseline = "top";
 
-    const smallest = numbers[0];
-    const largest = numbers.slice(-1)[0];
     const y = getXAxisPos() + NOTCH_LENGTH + LABEL_MARGIN;
 
     ctx.textAlign = "left";
-    ctx.fillText(smallest, 0, y);
+    ctx.fillText(getMinValue(), 0, y);
 
     ctx.textAlign = "center";
     const notches = getNotchPositions();
@@ -102,7 +113,7 @@ function drawGraphLabels(numbers) {
     }
 
     ctx.textAlign = "right";
-    ctx.fillText(largest, canvas.width, y);
+    ctx.fillText(getMaxValue(), canvas.width, y);
 
     ctx.textBaseline = textBaseline;
     ctx.textAlign = textAlign;
@@ -112,16 +123,15 @@ function drawGraphPlot(numbers) {
     const strokeStyle = ctx.strokeStyle;
     ctx.strokeStyle = "yellow";
 
-    const smallest = numbers[0];
-    const largest = numbers.slice(-1)[0];
-    const delta = largest - smallest;
-    const spacing = (canvas.width - getYAxisPos()) / delta;
+    const smallest = getMinValue();
+    const largest = getMaxValue();
+    const spacing = (canvas.width - getYAxisPos()) / (largest - smallest);
     const distribution = getDistribution(numbers);
     const highestCount = Math.max(...Object.values(distribution));
     const yScale = getXAxisPos() / highestCount;
 
     ctx.beginPath();
-    for (let i = 0; i <= delta; i++) {
+    for (let i = smallest; i <= largest; i++) {
         const n = smallest + i;
 
         const x = getYAxisPos() + i * spacing;

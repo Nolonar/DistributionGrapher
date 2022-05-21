@@ -3,10 +3,16 @@ body {
     color: white;
 }
 
+input[type="number"] {
+    text-align: right;
+    width: 8em;
+}
+
 #main-content {
     display: flex;
     flex-direction: column;
-    width: 1000px;
+    width: 100%;
+    max-width: 1000px;
     margin: auto;
 }
 
@@ -26,11 +32,24 @@ body {
     color: white;
 }
 
+label[for="code-area"] {
+    margin-bottom: 0.2em;
+}
+
 #controls {
     display: flex;
     margin: 2em 0 1em;
-    align-items: baseline;
+    align-items: flex-end;
     justify-content: space-between;
+}
+
+#controls div.control {
+    display: flex;
+    justify-content: space-between;
+}
+
+#controls div.control>label {
+    margin-right: 1em;
 }
 
 #btn-submit {
