@@ -25,7 +25,7 @@ input[type="number"] {
     box-sizing: border-box;
     width: 100%;
     max-width: 100%;
-    height: 500px;
+    height: 100px;
     padding: 1em;
     border: thin solid lightgrey;
     background-color: black;
@@ -37,10 +37,8 @@ label[for="code-area"] {
 }
 
 #controls {
-    display: flex;
     margin: 2em 0 1em;
-    align-items: flex-end;
-    justify-content: space-between;
+    width: 22em;
 }
 
 #controls div.control {
@@ -52,9 +50,16 @@ label[for="code-area"] {
     margin-right: 1em;
 }
 
+#controls div.control.space-before {
+    margin-top: 0.5em;
+}
+
 #btn-submit {
     cursor: pointer;
-    padding: 1ex;
+    padding: 0.5em;
+    margin-top: 1em;
+    width: 8em;
+    align-self: flex-end;
     color: white;
     background-color: #222222;
     border: thin solid lightgray;

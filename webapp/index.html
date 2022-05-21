@@ -12,24 +12,29 @@
     <div id="main-content">
         <canvas id="graph"></canvas>
         <div id="controls">
-            <div>
-                <div class="control">
-                    <label for="sample-size">Sample size:</label>
-                    <input type="number" id="sample-size" min="0" value="1000000">
-                </div>
-                <div class="control">
-                    <label for="min-value">Minimum value:</label>
-                    <input type="number" id="min-value" value="0">
-                </div>
-                <div class="control">
-                    <label for="max-value">Maximum value:</label>
-                    <input type="number" id="max-value" value="100">
-                </div>
+            <div class="control">
+                <label for="sample-size">Sample size:</label>
+                <input type="number" id="sample-size" min="0" value="1000000">
             </div>
-            <input type="button" id="btn-submit" value="Test function">
+            <div class="control">
+                <label for="min-value">Minimum value:</label>
+                <input type="number" id="min-value" value="0">
+            </div>
+            <div class="control">
+                <label for="max-value">Maximum value:</label>
+                <input type="number" id="max-value" value="100">
+            </div>
+            <div class="control space-before">
+                <label for="predefined-functions">Predefined functions:</label>
+                <select id="predefined-functions">
+                    <option value="default" selected>Default random</option>
+                    <option value="normal">Normal-distributed random</option>
+                </select>
+            </div>
         </div>
         <label for="code-area">Random function (must return numbers between 0 and 1):</label>
-        <textarea id="code-area" autofocus>[...Array(6)].map(() => Math.random()).reduce((a, b) => a + b) / 6</textarea>
+        <textarea id="code-area" autofocus></textarea>
+        <input type="button" id="btn-submit" value="Test function">
     </div>
 </body>
 

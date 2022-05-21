@@ -19,6 +19,11 @@ ctx.textAlign = "center";
 ctx.fillStyle = "white";
 ctx.strokeStyle = "white";
 
+const predefinedFunctions = {
+    default: "Math.random()",
+    normal: "[...Array(6)].map(() => Math.random()).reduce((a, b) => a + b) / 6"
+};
+
 const getSampleSize = () => Number(sampleSizeInput.value);
 const getFunction = () => codeArea.value;
 const getMinValue = () => Number(minValueInput.value);
@@ -38,6 +43,11 @@ const getDistribution = numbers => {
     }
     return result;
 }
+
+const changePredefinedFunction = select => {
+    codeArea.value = predefinedFunctions[select.value];
+    drawGraph();
+};
 
 function drawGraph() {
     ctx.clearRect(0, -1, canvas.width + 1, canvas.height);
@@ -159,4 +169,5 @@ function drawErrorMessage(errorMessage) {
 }
 
 document.getElementById("btn-submit").addEventListener("click", drawGraph);
-drawGraph();
+document.getElementById("predefined-functions").addEventListener("change", e => changePredefinedFunction(e.target));
+changePredefinedFunction(document.getElementById("predefined-functions"));
