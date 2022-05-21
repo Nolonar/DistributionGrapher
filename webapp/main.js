@@ -69,7 +69,7 @@ function drawGraph() {
     ctx.beginPath();
     drawGraphAxes();
     drawGraphNotches();
-    drawGraphLabels(numbers);
+    drawGraphLabels();
     ctx.stroke();
 
     drawGraphPlot(numbers);
@@ -93,7 +93,7 @@ function drawGraphNotches() {
     }
 }
 
-function drawGraphLabels(numbers) {
+function drawGraphLabels() {
     const textAlign = ctx.textAlign;
     const textBaseline = ctx.textBaseline;
     ctx.textBaseline = "top";
@@ -127,13 +127,14 @@ function drawGraphPlot(numbers) {
 
     const smallest = getMinValue();
     const largest = getMaxValue();
-    const spacing = (canvas.width - getYAxisPos()) / (largest - smallest);
+    const delta = largest - smallest;
+    const spacing = (canvas.width - getYAxisPos()) / delta;
     const distribution = getDistribution(numbers);
     const highestCount = Math.max(...Object.values(distribution));
     const yScale = getXAxisPos() / highestCount;
 
     ctx.beginPath();
-    for (let i = smallest; i <= largest; i++) {
+    for (let i = 0; i <= delta; i++) {
         const n = smallest + i;
 
         const x = getYAxisPos() + i * spacing;
