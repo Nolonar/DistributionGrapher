@@ -1,6 +1,8 @@
+html,
 body {
     background-color: black;
     color: white;
+    height: 100%;
 }
 
 input[type="number"] {
@@ -11,6 +13,7 @@ input[type="number"] {
 #main-content {
     display: flex;
     flex-direction: column;
+    height: 100%;
     width: 100%;
     max-width: 1000px;
     margin: auto;
@@ -19,6 +22,7 @@ input[type="number"] {
 #graph {
     width: 100%;
     height: 500px;
+    max-height: 50%;
 }
 
 #code-area {
