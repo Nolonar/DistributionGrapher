@@ -2,13 +2,14 @@ const NOTCH_COUNT = 8;
 const NOTCH_LENGTH = 10;
 const LABEL_MARGIN = 5;
 const TEXT_SIZE = 16;
+const TEXT_FONT = "Arial";
 
 export class Graph {
     constructor(canvas) {
         this.canvas = canvas;
         this.ctx = canvas.getContext("2d");
         this.data = {
-            numbers: null,
+            distribution: null,
             stats: null,
             min: 0,
             max: 0
@@ -19,18 +20,10 @@ export class Graph {
 
     initializeContext() {
         this.ctx.translate(-0.5, 0.5); // fix for blurry lines
-        this.ctx.font = `${TEXT_SIZE}px Arial`;
+        this.ctx.font = `${TEXT_SIZE}px ${TEXT_FONT}`;
         this.ctx.textAlign = "center";
         this.ctx.fillStyle = "white";
         this.ctx.strokeStyle = "white";
-    }
-
-    static getDistribution(numbers) {
-        const result = {};
-        for (const n of numbers)
-            result[n] = (result[n] || 0) + 1;
-
-        return result;
     }
 
     get xAxisPos() {
@@ -56,7 +49,7 @@ export class Graph {
         this.canvas.height = this.canvas.clientHeight;
         this.initializeContext(); // For some reason, the context is reset as soon as the canvas dimensions change
 
-        if (this.data.numbers !== null) {
+        if (this.data.distribution !== null) {
             this.invalidate();
         }
     }
@@ -76,8 +69,8 @@ export class Graph {
         this.ctx.fillStyle = fillStyle;
     }
 
-    drawGraph(numbers, stats, min, max) {
-        this.data.numbers = numbers;
+    drawGraph(distribution, stats, min, max) {
+        this.data.distribution = distribution;
         this.data.stats = stats;
         this.data.min = min;
         this.data.max = max;
@@ -148,7 +141,7 @@ export class Graph {
     }
 
     drawVerticalLineForValue(value, color) {
-        const x = this.yAxisPos + value * this.spacing;
+        const x = this.yAxisPos + (value - this.data.min) * this.spacing;
         if (x < this.yAxisPos || x > this.canvas.width) {
             return;
         }
@@ -166,25 +159,20 @@ export class Graph {
     }
 
     drawPlot() {
-        const xAxisPos = this.xAxisPos;
-        const yAxisPos = this.yAxisPos;
-        const delta = this.data.max - this.data.min;
+        const left = this.yAxisPos;
+        const bottom = this.xAxisPos;
         const spacing = this.spacing;
-        const distribution = Graph.getDistribution(this.data.numbers);
-        const highestCount = Math.max(...Object.values(distribution));
-        const yScale = xAxisPos / highestCount;
+        const maxValue = Math.max(...Object.values(this.data.distribution));
+        const yScale = bottom / maxValue;
+
+        const getY = value => bottom - yScale * (value || 0);
 
         this.ctx.beginPath();
-        for (let i = 0; i <= delta; i++) {
-            const n = this.data.min + i;
-
-            const x = yAxisPos + i * spacing;
-            const y = xAxisPos - yScale * (distribution[n] || 0);
-            if (i === 0) {
-                this.ctx.moveTo(x, y);
-            } else {
-                this.ctx.lineTo(x, y);
-            }
+        this.ctx.moveTo(left, getY(this.data.distribution[0]));
+        for (let i = 1; i < this.data.distribution.length; ++i) {
+            const x = left + i * spacing;
+            const y = getY(this.data.distribution[i]);
+            this.ctx.lineTo(x, y);
         }
         const strokeStyle = this.ctx.strokeStyle;
 

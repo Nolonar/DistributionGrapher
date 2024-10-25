@@ -64,7 +64,7 @@ function submitFunction() {
     numbers = numbers.map(n => Math.floor((maxValue - minValue) * n + minValue));
     const stats = getStats(numbers);
 
-    graph.drawGraph(numbers, stats, minValue, maxValue);
+    graph.drawGraph(getDistribution(numbers), stats, minValue, maxValue);
     updateStats(stats);
 }
 
@@ -72,6 +72,16 @@ function updateStats(stats) {
     medText.innerText = stats.median;
     varText.innerText = stats.variance;
     stdText.innerText = stats.std;
+}
+
+function getDistribution(numbers) {
+    const maxValue = getMaxValue();
+    const minValue = getMinValue();
+    const result = new Array(maxValue - minValue).fill(0);
+    for (const n of numbers.map(n => n - minValue))
+        ++result[n];
+
+    return result;
 }
 
 window.addEventListener("resize", graph.updateDimensions);
