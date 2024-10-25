@@ -14,9 +14,9 @@
         <canvas id="graph"></canvas>
         <div id="controls">
             <div class="control">
-                <label for="sample-size">Sample size:</label>
-                <input type="number" id="sample-size" min="0" value="1000000"
-                    title="The amount of random numbers to generate. A higher sample size takes longer to process, but results in a more representative distribution.">
+                <label for="max-sample-size">Maximum sample size:</label>
+                <input type="number" id="max-sample-size" min="0" value="1000000"
+                    title="The maximum amount of random numbers to generate. The application will continuously add random numbers and update the graph until the maximum sample size has been reached. A higher maximum sample size takes longer to finish, but results in a more representative distribution.">
             </div>
             <div class="control">
                 <label for="min-value">Minimum value:</label>
@@ -39,6 +39,7 @@
             title="The function that generates random numbers. Each number must be between 0 and 1."></textarea>
         <input type="button" id="btn-submit" value="Test function">
         <p id="stats">
+            Total samples: <span id="samples"></span><br>
             Median: <span id="med"></span><br>
             Variance: <span id="var"></span><br>
             Standard deviation: <span id="std"></span>
