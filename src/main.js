@@ -1,3 +1,5 @@
+import { Graph } from "./graph.js";
+
 const graph = new Graph(document.getElementById("graph"));
 
 const sampleSizeInput = document.getElementById("sample-size");

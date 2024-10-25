@@ -3,7 +3,7 @@ const NOTCH_LENGTH = 10;
 const LABEL_MARGIN = 5;
 const TEXT_SIZE = 16;
 
-class Graph {
+export class Graph {
     constructor(canvas) {
         this.canvas = canvas;
         this.ctx = canvas.getContext("2d");
@@ -27,13 +27,9 @@ class Graph {
 
     static getDistribution(numbers) {
         const result = {};
-        for (let n of numbers) {
-            if (result[n]) {
-                result[n]++;
-            } else {
-                result[n] = 1;
-            }
-        }
+        for (const n of numbers)
+            result[n] = (result[n] || 0) + 1;
+
         return result;
     }
 
@@ -99,7 +95,7 @@ class Graph {
         this.ctx.stroke();
 
         this.drawVerticalLineForValue(this.data.stats.median, "red");
-        for (let sigma of [-3, -2, -1, 1, 2, 3]) {
+        for (const sigma of [-3, -2, -1, 1, 2, 3]) {
             const offset = this.data.stats.std * sigma;
             this.drawVerticalLineForValue(this.data.stats.median + offset, "cyan");
         }
@@ -119,7 +115,7 @@ class Graph {
 
     drawNotches() {
         const xAxisPos = this.xAxisPos;
-        for (let x of this.notchPositions) {
+        for (const x of this.notchPositions) {
             this.ctx.moveTo(x, xAxisPos);
             this.ctx.lineTo(x, xAxisPos + NOTCH_LENGTH);
         }
