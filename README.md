@@ -1,3 +1,3 @@
 # DistributionGrapher
 
-Test the distribution of your random number: https://nolonar.github.io/DistributionGrapher/webapp
+Test the distribution of your random number: https://nolonar.github.io/DistributionGrapher/
